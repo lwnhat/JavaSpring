@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "java -Dserver.port=$PORT -jar target/clothing-shop-1.0.0.jar",
+    "startCommand": "java -jar target/clothing-shop-1.0.0.jar",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300
   }
