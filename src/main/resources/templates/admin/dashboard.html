@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ClothingShop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .admin-sidebar { min-height: 100vh; background-color: #1a1a2e; }
+        .sidebar-link { color: #adb5bd; transition: all 0.2s; }
+        .sidebar-link:hover, .sidebar-link.active { color: #fff; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .stat-card { border-left: 4px solid; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="d-flex">
+    <!-- ========== SIDEBAR ========== -->
+    <div class="admin-sidebar p-3" style="width: 250px; min-width: 250px;">
+        <!-- Logo -->
+        <div class="text-white text-center py-3 mb-3 border-bottom border-secondary">
+            <i class="bi bi-shield-lock-fill text-danger fs-2"></i>
+            <div class="fw-bold mt-1">Admin Panel</div>
+            <small class="text-muted" sec:authentication="name">Admin</small>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav flex-column gap-1">
+            <a th:href="@{/admin/dashboard}"
+               class="sidebar-link nav-link d-flex align-items-center gap-2 p-2 active">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a th:href="@{/admin/products}"
+               class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-box-seam"></i> Sản phẩm
+            </a>
+            <a th:href="@{/admin/categories}"
+               class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-tags"></i> Danh mục
+            </a>
+            <a th:href="@{/admin/orders}"
+               class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-receipt"></i> Đơn hàng
+            </a>
+            <a th:href="@{/admin/users}"
+               class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-people"></i> Người dùng
+            </a>
+            <hr class="border-secondary">
+            <a th:href="@{/}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-house"></i> Về trang chủ
+            </a>
+            <a th:href="@{/auth/logout}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2">
+                <i class="bi bi-box-arrow-right text-danger"></i>
+                <span class="text-danger">Đăng xuất</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <div class="flex-grow-1 p-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold">
+                <i class="bi bi-speedometer2 me-2 text-danger"></i>Dashboard
+            </h3>
+            <span class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
+            </span>
+        </div>
+
+        <!-- Thông báo -->
+        <div th:if="${successMsg}" class="alert alert-success alert-dismissible">
+            <span th:text="${successMsg}"></span>
+            <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- ========== THỐNG KÊ ========== -->
+        <div class="row g-4 mb-5">
+            <!-- Tổng sản phẩm -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm stat-card" style="border-left-color: #0d6efd !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-muted small fw-semibold">TỔNG SẢN PHẨM</div>
+                                <div class="fs-2 fw-bold text-primary"
+                                     th:text="${totalProducts}">0</div>
+                            </div>
+                            <i class="bi bi-box-seam fs-1 text-primary opacity-50"></i>
+                        </div>
+                        <a th:href="@{/admin/products}" class="btn btn-outline-primary btn-sm mt-2">
+                            Quản lý →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Tổng đơn hàng -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm stat-card" style="border-left-color: #ffc107 !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-muted small fw-semibold">TỔNG ĐƠN HÀNG</div>
+                                <div class="fs-2 fw-bold text-warning"
+                                     th:text="${totalOrders}">0</div>
+                            </div>
+                            <i class="bi bi-receipt fs-1 text-warning opacity-50"></i>
+                        </div>
+                        <a th:href="@{/admin/orders}" class="btn btn-outline-warning btn-sm mt-2">
+                            Quản lý →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Đơn chờ duyệt -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm stat-card" style="border-left-color: #dc3545 !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-muted small fw-semibold">CHỜ XÁC NHẬN</div>
+                                <div class="fs-2 fw-bold text-danger"
+                                     th:text="${pendingOrders}">0</div>
+                            </div>
+                            <i class="bi bi-clock fs-1 text-danger opacity-50"></i>
+                        </div>
+                        <a th:href="@{/admin/orders}" class="btn btn-outline-danger btn-sm mt-2">
+                            Xem ngay →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Doanh thu -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm stat-card" style="border-left-color: #198754 !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="text-muted small fw-semibold">DOANH THU</div>
+                                <div class="fs-4 fw-bold text-success">
+                                    <span th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                </div>
+                            </div>
+                            <i class="bi bi-currency-dollar fs-1 text-success opacity-50"></i>
+                        </div>
+                        <small class="text-muted">Từ đơn đã giao</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê người dùng -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people fs-1 text-info"></i>
+                        <h4 class="fw-bold mt-2" th:text="${totalUsers}">0</h4>
+                        <p class="text-muted">Người dùng đã đăng ký</p>
+                        <a th:href="@{/admin/users}" class="btn btn-outline-info btn-sm">Xem danh sách</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Đơn hàng gần đây -->
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="bi bi-clock-history me-2 text-danger"></i>Đơn hàng gần đây
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 small">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-3">Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="order : ${recentOrders}">
+                                        <td class="ps-3 fw-bold">#<span th:text="${order.id}"></span></td>
+                                        <td th:text="${order.user.username}"></td>
+                                        <td class="text-danger fw-semibold">
+                                            <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                  th:classappend="${order.status.name() == 'PENDING'} ? 'bg-warning text-dark' :
+                                                                  (${order.status.name() == 'CONFIRMED'} ? 'bg-info text-dark' :
+                                                                  (${order.status.name() == 'SHIPPING'} ? 'bg-primary' :
+                                                                  (${order.status.name() == 'DELIVERED'} ? 'bg-success' : 'bg-danger')))"
+                                                  th:text="${order.status.displayName}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}"
+                                               class="btn btn-outline-secondary btn-sm">Xem</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

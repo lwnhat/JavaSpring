@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa Đơn - ClothingShop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #fff !important; }
+            .invoice-wrapper { box-shadow: none !important; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/header :: navbar}" class="no-print"></nav>
+
+<div class="container py-4">
+    <div th:if="${successMsg}" class="alert alert-success no-print">
+        <i class="bi bi-check-circle me-2"></i><span th:text="${successMsg}"></span>
+    </div>
+
+    <div class="invoice-wrapper card border-0 shadow-sm mx-auto" style="max-width: 900px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1 text-danger">CLOTHINGSHOP</h3>
+                    <div class="text-muted small">HÓA ĐƠN THANH TOÁN</div>
+                </div>
+                <div class="text-md-end">
+                    <div><span class="text-muted">Mã hóa đơn:</span> <span class="fw-bold">#<span th:text="${order.id}"></span></span></div>
+                    <div><span class="text-muted">Ngày tạo:</span> <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span></div>
+                    <div>
+                        <span class="badge"
+                              th:classappend="${order.status.name() == 'PENDING'} ? 'bg-warning text-dark' :
+                                              (${order.status.name() == 'CONFIRMED'} ? 'bg-info text-dark' :
+                                              (${order.status.name() == 'SHIPPING'} ? 'bg-primary' :
+                                              (${order.status.name() == 'DELIVERED'} ? 'bg-success' : 'bg-danger')))"
+                              th:text="${order.status.displayName}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Thông tin khách hàng</h6>
+                    <div class="small"><span class="text-muted">Người nhận:</span> <span th:text="${order.user.fullName ?: order.user.username}"></span></div>
+                    <div class="small"><span class="text-muted">Email:</span> <span th:text="${order.user.email}"></span></div>
+                    <div class="small"><span class="text-muted">Điện thoại:</span> <span th:text="${order.phone}"></span></div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Thông tin giao hàng</h6>
+                    <div class="small"><span class="text-muted">Địa chỉ:</span> <span th:text="${order.shippingAddress}"></span></div>
+                    <div class="small" th:if="${order.note != null and !order.note.empty}">
+                        <span class="text-muted">Ghi chú:</span> <span th:text="${order.note}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-4">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th class="text-center">Đơn giá</th>
+                        <th class="text-center">SL</th>
+                        <th class="text-end">Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.orderItems}">
+                        <td th:text="${item.product.name}"></td>
+                        <td class="text-center" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                        <td class="text-center" th:text="${item.quantity}"></td>
+                        <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(item.subTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <div style="min-width: 280px;">
+                    <div class="d-flex justify-content-between text-success">
+                        <span>Phí vận chuyển</span>
+                        <span>Miễn phí</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between fs-5 fw-bold text-danger">
+                        <span>Tổng thanh toán</span>
+                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-top text-muted small">
+                Cảm ơn bạn đã mua sắm tại ClothingShop.
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4 no-print">
+        <a th:href="@{/orders/history}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left me-1"></i>Về lịch sử đơn hàng
+        </a>
+        <button type="button" class="btn btn-danger" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>In bill
+        </button>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}" class="no-print"></footer>
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+</body>
+</html>

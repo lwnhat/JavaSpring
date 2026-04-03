@@ -1,0 +1,330 @@
+/* ==========================================
+   CLOTHING SHOP - CUSTOM CSS
+   Đồ Án Đại Học Java Spring MVC
+   ========================================== */
+
+/* ---- GENERAL ---- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+a {
+    color: #dc3545;
+    transition: all 0.2s;
+}
+
+a:hover {
+    color: #b02a37;
+}
+
+/* ---- NAVBAR ---- */
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    display: block;
+}
+
+.footer-logo {
+    height: 32px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+}
+
+/* Navbar nền trắng */
+.navbar-light .navbar-nav .nav-link.text-dark:hover {
+    color: #dc3545 !important;
+}
+
+.navbar-user-avatar {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+}
+
+/* Logo + phần mở rộng: khoảng cách gọn; các nút/menu căn đều trong vùng collapse */
+.navbar > .container {
+    gap: 0.5rem;
+}
+
+/* Ba cột ảo: Trang chủ/Sản phẩm | ô tìm kiếm | giỏ / tài khoản — khoảng cách đều, cảm giác cân giữa */
+.navbar-balanced {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+@media (min-width: 992px) {
+    .navbar-balanced {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 0.5rem 1rem;
+    }
+
+    .navbar-search-form {
+        min-width: 200px;
+        max-width: 280px;
+        flex: 0 1 260px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .navbar-nav-main .nav-link {
+        white-space: nowrap;
+    }
+
+    .navbar-nav-actions .nav-link.dropdown-toggle {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* ---- BANNER TRANG CHỦ (full width, chỉ ảnh) ---- */
+.hero-banner-only {
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    overflow: hidden;
+    background: #0a1929;
+}
+
+.hero-banner-full {
+    width: 100%;
+    /* ~40% chiều cao cửa sổ trình duyệt */
+    height: 40vh;
+    min-height: 100px;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+}
+
+/* ---- PRODUCT CARD ---- */
+.product-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.product-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    background: #f8f9fa;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.08);
+}
+
+/* ---- BADGES ---- */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* ---- BUTTONS ---- */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+    border-color: #a52834;
+}
+
+/* ---- CARDS ---- */
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-size: 1rem;
+}
+
+/* ---- FORMS ---- */
+.form-control:focus,
+.form-select:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.2);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+/* ---- TABLES ---- */
+.table th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* ---- PAGINATION ---- */
+.pagination .page-link {
+    color: #dc3545;
+    border-radius: 8px;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    color: #b02a37;
+    background-color: #f8d7da;
+}
+
+/* ---- ALERTS ---- */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* ---- SIZE BUTTONS ---- */
+.size-btn {
+    min-width: 45px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+.size-btn:hover {
+    background-color: #343a40;
+    color: white;
+    border-color: #343a40;
+}
+
+/* ---- CART TABLE ---- */
+.table .product-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* ---- ADMIN SIDEBAR ---- */
+.admin-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.admin-sidebar .sidebar-link {
+    text-decoration: none;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+}
+
+/* ---- STAT CARDS (ADMIN DASHBOARD) ---- */
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+    .product-img-wrapper {
+        height: 180px;
+    }
+
+    .admin-sidebar {
+        display: none; /* Ẩn sidebar trên mobile */
+    }
+}
+
+/* ---- FOOTER ---- */
+footer a:hover {
+    color: #fff !important;
+}
+
+/* ---- LOADING SPINNER ---- */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none;
+}
+
+/* ---- BREADCRUMB ---- */
+.breadcrumb {
+    background: none;
+    padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #dc3545;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #dc3545;
+}
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #dc3545;
+    border-radius: 3px;
+}
+
+/* ---- ORDER STATUS BADGE COLORS ---- */
+.status-pending { background-color: #ffc107; color: #000; }
+.status-confirmed { background-color: #17a2b8; color: #fff; }
+.status-shipping { background-color: #007bff; color: #fff; }
+.status-delivered { background-color: #28a745; color: #fff; }
+.status-cancelled { background-color: #dc3545; color: #fff; }

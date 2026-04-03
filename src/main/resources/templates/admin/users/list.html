@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Người Dùng - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .admin-sidebar { min-height: 100vh; background-color: #1a1a2e; }
+        .sidebar-link { color: #adb5bd; transition: all 0.2s; }
+        .sidebar-link:hover, .sidebar-link.active { color: #fff; background: rgba(255,255,255,0.1); border-radius: 8px; }
+    </style>
+</head>
+<body class="bg-light">
+<div class="d-flex">
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar p-3" style="width: 250px; min-width: 250px;">
+        <div class="text-white text-center py-3 mb-3 border-bottom border-secondary">
+            <i class="bi bi-shield-lock-fill text-danger fs-2"></i>
+            <div class="fw-bold mt-1">Admin Panel</div>
+            <small class="text-muted" sec:authentication="name">Admin</small>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a th:href="@{/admin/dashboard}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a th:href="@{/admin/products}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-box-seam"></i> Sản phẩm</a>
+            <a th:href="@{/admin/categories}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-tags"></i> Danh mục</a>
+            <a th:href="@{/admin/orders}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-receipt"></i> Đơn hàng</a>
+            <a th:href="@{/admin/users}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2 active"><i class="bi bi-people"></i> Người dùng</a>
+            <hr class="border-secondary">
+            <a th:href="@{/}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-house"></i> Trang chủ</a>
+            <a th:href="@{/auth/logout}" class="sidebar-link nav-link d-flex align-items-center gap-2 p-2"><i class="bi bi-box-arrow-right text-danger"></i><span class="text-danger">Đăng xuất</span></a>
+        </nav>
+    </div>
+
+    <!-- MAIN -->
+    <div class="flex-grow-1 p-4">
+        <h3 class="fw-bold mb-4">
+            <i class="bi bi-people me-2 text-danger"></i>Quản Lý Người Dùng
+        </h3>
+
+        <!-- Thống kê -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold mb-0" th:text="${users.size()}">0</h3>
+                        <small>Tổng người dùng</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold mb-0" th:text="${adminCount}">0</h3>
+                        <small>Admin</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold mb-0" th:text="${userCount}">0</h3>
+                        <small>Khách hàng</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng người dùng -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th class="ps-3">#</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Họ tên</th>
+                                <th>SĐT</th>
+                                <th>Quyền</th>
+                                <th>Ngày đăng ký</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user, stat : ${users}">
+                                <td class="ps-3 text-muted" th:text="${stat.count}"></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center
+                                                    justify-content-center fw-bold"
+                                             style="width: 36px; height: 36px; font-size: 14px;"
+                                             th:text="${#strings.substring(user.username, 0, 1).toUpperCase()}">
+                                        </div>
+                                        <span class="fw-semibold" th:text="${user.username}"></span>
+                                    </div>
+                                </td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.fullName ?: '-'}"></td>
+                                <td th:text="${user.phone ?: '-'}"></td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${user.role == 'ROLE_ADMIN'} ? 'bg-danger' : 'bg-success'"
+                                          th:text="${user.role == 'ROLE_ADMIN'} ? 'Admin' : 'Khách hàng'">
+                                    </span>
+                                </td>
+                                <td>
+                                    <small th:if="${user.createdAt != null}"
+                                           th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">
+                                    </small>
+                                    <small th:if="${user.createdAt == null}" class="text-muted">-</small>
+                                </td>
+                                <td>
+                                    <span th:class="${user.enabled} ? 'badge bg-success' : 'badge bg-secondary'"
+                                          th:text="${user.enabled} ? 'Hoạt động' : 'Bị khóa'">
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${users == null or users.empty}">
+                                <td colspan="8" class="text-center py-4 text-muted">Chưa có người dùng</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,22 @@
+# Maven
+/target/
+
+# Mật khẩu / bí mật cục bộ (không commit)
+application-local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.class
+
+# Log
+*.log
+
+# Ảnh sản phẩm upload từ admin (giữ thư mục nhờ .gitkeep)
+uploads/products/*
+!uploads/products/.gitkeep
+
+# Avatar người dùng
+uploads/avatars/*
+!uploads/avatars/.gitkeep

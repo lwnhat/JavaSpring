@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ========== FOOTER FRAGMENT ========== -->
+<!-- Sử dụng: <footer th:replace="~{fragments/footer :: footer}"></footer> -->
+
+<footer th:fragment="footer" class="bg-dark text-white mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="mb-2">
+                    <img th:src="@{/images/logo/logo.png}" alt="" class="footer-logo" height="32" loading="lazy">
+                </div>
+                <p class="text-muted small">
+                    Website bán quần áo thời trang hàng đầu Việt Nam.
+                    Chất lượng - Uy tín - Giá cả hợp lý.
+                </p>
+            </div>
+            <div class="col-md-2 mb-3">
+                <h6 class="fw-bold">Danh mục</h6>
+                <ul class="list-unstyled small">
+                    <li><a th:href="@{/products}" class="text-muted text-decoration-none">Tất cả sản phẩm</a></li>
+                    <li><a th:href="@{/products?categoryId=1}" class="text-muted text-decoration-none">Áo</a></li>
+                    <li><a th:href="@{/products?categoryId=2}" class="text-muted text-decoration-none">Quần</a></li>
+                    <li><a th:href="@{/products?categoryId=3}" class="text-muted text-decoration-none">Váy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h6 class="fw-bold">Hỗ trợ</h6>
+                <ul class="list-unstyled small text-muted">
+                    <li><i class="bi bi-phone me-1"></i> Hotline: 0123-456-789</li>
+                    <li><i class="bi bi-envelope me-1"></i> shop@clothing.vn</li>
+                    <li><i class="bi bi-clock me-1"></i> 8:00 - 22:00 mỗi ngày</li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h6 class="fw-bold">Theo dõi chúng tôi</h6>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="#" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <div class="text-center text-muted small">
+            <p class="mb-0">&copy; 2026 ClothingShop - Đồ Án Đại Học Java Spring MVC</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Script sẽ được include ở tất cả trang -->
+<th:block th:fragment="scripts">
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</th:block>
+
+</html>
+
+

@@ -1,0 +1,172 @@
+Bạn là senior Android Developer (Kotlin). Nhiệm vụ: xây dựng ứng dụng cửa hàng thời trang trên Android Studio cho ĐỒ ÁN môn Lập trình Android, tích hợp với backend Java/Spring Boot và MySQL đã có sẵn (dự án web cùng lớp môn Java Spring MVC).
+
+================================================================================
+PHẦN 1 — BỐI CẢNH ĐỒ ÁN & KIẾN TRÚC (BẮT BUỘC TUÂN THỦ)
+================================================================================
+
+• Hệ thống gồm 3 lớp dữ liệu logic:
+  (1) MySQL — database tên schema: clothing_shop
+  (2) Spring Boot — một ứng dụng duy nhất: phục vụ web (Thymeleaf/MVC) VÀ REST API JSON tại tiền tố /api
+  (3) App Android — CHỈ giao tiếp qua HTTP/HTTPS với Spring Boot
+
+• “Dùng chung database với môn Java” nghĩa là: App KHÔNG được dùng JDBC / MySQL Connector / kết nối trực tiếp tới MySQL từ điện thoại. Mọi dữ liệu đọc/ghi đi qua REST API của Spring Boot — đây là kiến trúc đúng để báo cáo và bảo vệ đồ án.
+
+• Luồng: [App Android] --REST JSON--> [Spring Boot] <--> [MySQL]
+
+================================================================================
+PHẦN 2 — MẠNG & LDPLAYER (CẤU HÌNH DEMO — RẤT QUAN TRỌNG)
+================================================================================
+
+• Spring Boot chạy trên PC dev, cổng mặc định: 8081 (application.properties: server.port=8081).
+• Server đã cấu hình lắng nghe mọi giao diện mạng: server.address=0.0.0.0 — LDPlayer / máy trong LAN có thể gọi được (miễn firewall cho phép).
+
+• TRONG APP ANDROID: TUYỆt ĐỐI KHÔNG dùng http://localhost hoặc http://127.0.0.1 để trỏ tới máy host đang chạy Spring Boot. Trên LDPlayer/emulator, localhost là chính máy ảo, không phải PC.
+
+• Cách đúng:
+  1) Trên Windows, chạy ipconfig → lấy IPv4 của card đang dùng (Wi‑Fi hoặc Ethernet), ví dụ 192.168.1.47
+  2) BASE_URL cho Retrofit (debug): http://192.168.1.47:8081/api/
+     (thay IP bằng IP thật; giữ đuôi /api/ thống nhất với cấu hình Retrofit)
+  3) Mở Windows Firewall: cho phép inbound TCP 8081 (hoặc tắt tạm khi demo trong mạng tin cậy)
+  4) LDPlayer và PC cùng mạng LAN khi dùng IP LAN
+
+• Ghi chú: Một số bản LDPlayer có thể thử http://10.0.2.2:8081/api (giống AVD) — không đảm bảo mọi phiên bản. Ưu tiên luôn IP LAN từ ipconfig.
+
+================================================================================
+PHẦN 3 — CONTRACT REST API (BACKEND THỰC TẾ — ApiController)
+================================================================================
+
+Base path: /api
+POST dùng Content-Type: application/json; UTF-8
+
+— GET    /api/health
+  Kiểm tra server & mạng. Response kiểu: success, message, data
+
+— GET    /api/categories
+  Response: { "success": true, "data": [ Category, ... ] }
+
+— GET    /api/products?keyword={tùy chọn}&categoryId={tùy chọn}&page=0&size=12
+  page bắt đầu từ 0; size tùy UI
+  Response: { "success", "data": [ Product ], "currentPage", "totalItems", "totalPages" }
+
+— GET    /api/products/{id}
+  200: { "success": true, "data": Product }
+  404: { "success": false, "message": "..." }
+
+— POST   /api/register
+  Body JSON: username (bắt buộc), email (bắt buộc), password (bắt buộc), fullName (tùy chọn), phone (tùy chọn)
+  201 Created khi thành công; lỗi nghiệp vụ: success false + message
+
+— POST   /api/login
+  Body JSON: username, password
+  200: success true; data gồm: id, username, email, fullName, role, phone, address
+  401: sai đăng nhập
+
+— POST   /api/cart/add
+  Body JSON: userId (Long), productId (Long), quantity (tùy chọn, mặc 1)
+
+— GET    /api/cart/user/{userId}
+  Response: success; data: danh sách dòng giỏ (id, productId, productName, price, quantity, subTotal, image …); total: BigDecimal tổng tiền
+
+— POST   /api/orders
+  Body JSON tối thiểu: userId, address, phone
+  Tùy chọn: note (String)
+  Tùy chọn: items — mảng để đồng bộ giỏ phía server trước khi tạo đơn, ví dụ:
+  [
+    { "productId": 2, "quantity": 1 },
+    { "productId": 5, "quantity": 2 }
+  ]
+  (Chấp nhận cả object lồng product.id tùy backend — ưu tiên productId + quantity)
+  201: success, message, orderId
+
+— GET    /api/orders/user/{userId}
+  data: danh sách đơn rút gọn: id, totalPrice, status, statusDisplay, createdAt, shippingAddress, itemCount
+
+Quy ước response:
+• Thành công thường có "success": true và "data" hoặc các field bổ sung như orderId, message
+• Lỗi: "success": false và "message"; HTTP status 4xx/5xx tùy trường hợp
+
+================================================================================
+PHẦN 4 — ẢNH SẢN PHẨM
+================================================================================
+
+• JSON Product có thể có imageUrl (getter serialization) và/hoặc image
+• Nếu giá trị là đường dẫn tuyệt đối http/https → dùng trực tiếp
+• Nếu là đường dẫn tương đối bắt đầu bằng / (ví dụ /images/..., /uploads/...) → ghép: http://<HOST>:8081 + path, tránh double slash
+• Thư viện: Coil (Compose); placeholder + error image
+
+================================================================================
+PHẦN 5 — CHỨC NĂNG APP (TƯƠNG ĐƯƠNG WEB BÁN HÀNG — CHECKLIST ĐỒ ÁN)
+================================================================================
+
+Bắt buộc có đủ luồng nghiệp vụ sau:
+
+1) Splash / kiểm tra kết nối: gọi GET /api/health; thất bại → màn hình lỗi + nút thử lại
+2) Trang chủ: hiển thị danh mục (GET /api/categories) và lưới sản phẩm (GET /api/products, phân trang); pull-to-refresh; có thể 2 section (ví dụ “Gợi ý” / “Mới”) bằng hai request phân trang khác nhau
+3) Tìm kiếm & lọc: keyword + categoryId + phân trang (cùng endpoint /api/products)
+4) Chi tiết sản phẩm: GET /api/products/{id}; hiển thị ảnh, giá, mô tả, tồn kho; nút thêm giỏ (yêu cầu đăng nhập — POST /api/cart/add với userId)
+5) Giỏ hàng: GET /api/cart/user/{userId}; hiển thị dòng + tổng tiền
+6) Checkout: form địa chỉ, số điện thoại, ghi chú → POST /api/orders; nên gửi kèm mảng items build từ giỏ local để đồng bộ server trước khi tạo đơn
+7) Lịch sử đơn: GET /api/orders/user/{userId}; hiển thị trạng thái, tổng tiền, thời gian
+8) Đăng ký & đăng nhập: POST /api/register, POST /api/login; sau login lưu userId và thông tin hiển thị (DataStore); KHÔNG lưu password; logout xóa session local
+
+GIỚI HẠN SO VỚI WEB (GHI TRONG BÁO CÁO NẾU KHÔNG MỞ RỘNG BACKEND):
+• Web có cập nhật profile (/user/profile) — backend REST hiện có thể chưa có PUT user; có thể hiển thị profile chỉ đọc từ data sau login hoặc đề xuất mở rộng API
+• Web có cập nhật/xóa dòng giỏ — API mobile hiện có POST /api/cart/add và có thể đồng bộ giỏ lúc đặt hàng qua items; nếu cần đủ tính năng như web thì mở rộng thêm API trên Spring
+
+================================================================================
+PHẦN 6 — YÊU CẦU KỸ THUẬT ANDROID & GIAO DIỆN HIỆN ĐẠI
+================================================================================
+
+• Ngôn ngữ: Kotlin
+• UI: Jetpack Compose + Material 3
+• Kiến trúc: MVVM; ViewModel + UiState (sealed class hoặc data class); StateFlow
+• Networking: Retrofit 2 + OkHttp (HttpLoggingInterceptor chỉ bật debug) + Gson hoặc Moshi
+• Bất đồng bộ: Kotlin Coroutines
+• Điều hướng: Navigation Compose; 1 Activity
+• Lưu trữ local: DataStore Preferences — userId, username, email, …
+• Hình ảnh: Coil
+
+Cấu trúc package gợi ý:
+com.shop.android/
+  data/remote (ApiService, Retrofit)
+  data/repository
+  domain (model thuần Kotlin)
+  ui/theme, ui/screens (splash, home, search, detail, cart, checkout, orders, login, register, account)
+  util (NetworkResult, ImageUrlResolver)
+
+UI/UX hiện đại:
+• Bottom navigation: Trang chủ | Tìm/Danh mục | Giỏ hàng | Tài khoản
+• Card sản phẩm bo góc (12dp), ảnh tỉ lệ đẹp, giá nổi bật (màu primary)
+• Loading, empty state, Snackbar/Toast lỗi, pull-to-refresh
+• Dark mode: tùy chọn (Material 3 darkColorScheme)
+
+Bảo mật & build:
+• Chỉ build DEBUG cho phép HTTP cleartext qua networkSecurityConfig trỏ tới IP dev
+• BASE_URL không hardcode secret; đọc từ local.properties hoặc BuildConfig
+• Release nên hướng tới HTTPS nếu triển khai thật
+
+================================================================================
+PHẦN 7 — GIAO NỘP & TÀI LIỆU ĐI KÈM
+================================================================================
+
+• Tạo README.md trong project Android: hướng dẫn LDPlayer — đổi IP, mở firewall, kiểm tra /api/health trên trình duyệt PC trước khi mở app
+• Checklist test: health → categories → products → detail → login → add cart → get cart → place order → order history
+• Code phải build được trên Android Studio mới (Gradle Kotlin DSL)
+
+================================================================================
+PHẦN 8 — YÊU CẦU SINH CODE
+================================================================================
+
+Hãy sinh một project Android hoàn chỉnh (Gradle Kotlin DSL) gồm ít nhất:
+• build.gradle.kts (app + root) với dependencies đầy đủ
+• Application / MainActivity / NavHost
+• ApiService (interface Retrofit) khớp toàn bộ endpoint trên
+• DTO/model và mapping nếu cần
+• ShopRepository + các ViewModel cho Splash, Home, ProductDetail, Cart, Checkout, Orders, Auth
+• Các màn hình Compose tương ứng checklist chức năng
+• Theme Material 3
+• Xử lý lỗi mạng và parse JSON success/message
+
+Bắt đầu từ: (1) cấu hình Gradle + Retrofit + BASE_URL, (2) Splash + Home gọi health + categories + products, sau đó mở rộng các màn còn lại theo đúng thứ tự luồng mua hàng.
+
+Kết thúc bằng tóm tắt cách chạy trên LDPlayer và cách đổi BASE_URL khi đổi máy hoặc mạng Wi‑Fi.
