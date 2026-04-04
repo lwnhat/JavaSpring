@@ -39,8 +39,15 @@ App đã hỗ trợ tự đọc biến `MYSQL*` của Railway, bạn chỉ cần
 - `SPRING_PROFILES_ACTIVE=prod`
 - `APP_LOG_LEVEL=INFO`
 - `SECURITY_LOG_LEVEL=INFO`
+- `APP_BOOTSTRAP_USERS_ENABLED=true`
+- `APP_BOOTSTRAP_ADMIN_USERNAME=admin`
+- `APP_BOOTSTRAP_ADMIN_EMAIL=admin@shop.com`
+- `APP_BOOTSTRAP_ADMIN_PASSWORD=admin123`
+- `APP_BOOTSTRAP_ADMIN_FORCE_RESET_PASSWORD=false` (bật `true` 1 lần nếu cần ép reset mật khẩu admin)
 - `GMAIL_APP_PASSWORD=<app-password-gmail>` (nếu dùng gửi mail bill)
 - `APP_MAIL_BILL_ENABLED=false` (nếu chưa cấu hình mail)
+
+Ghi chú: nếu DB Railway đã có user cũ với mật khẩu chưa hash BCrypt, app sẽ tự chuyển sang BCrypt lúc khởi động khi `APP_BOOTSTRAP_USERS_ENABLED=true`.
 
 ### 4. Import dữ liệu database
 
